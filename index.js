@@ -16,6 +16,7 @@ search.addEventListener('click',(event) => {
 async function fetchProblemList(arg, i) {
     let url = `https://codeforces.com/api/user.status?handle=${arg}`;
     const response = await fetch(url);
+    if (response.status != 200) return;
     const users = await response.json();
     const data = users.result;
     const problems = new Map();
@@ -60,6 +61,7 @@ async function fetchProblemList(arg, i) {
 async function impDetails(arg) {
     let url = `https://codeforces.com/api/user.status?handle=${arg}`;
     let response = await fetch(url);
+    if (response.status != 200) return;
     let users = await response.json();
     const data = users.result;
     let value1 = document.getElementById('value2');
