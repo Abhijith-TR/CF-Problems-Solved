@@ -1,5 +1,6 @@
 let search = document.getElementById('search');
 let i = 1;
+let profileURL = "";
 
 // Functionality to alert the user if the username entered is invalid
 
@@ -16,7 +17,10 @@ search.addEventListener('click',(event) => {
 async function fetchProblemList(arg, i) {
     let url = `https://codeforces.com/api/user.status?handle=${arg}`;
     const response = await fetch(url);
-    if (response.status != 200) return;
+    if (response.status != 200) {
+        window.alert("Please Enter a Valid Username");
+        return;
+    }
     const users = await response.json();
     const data = users.result;
     const problems = new Map();
@@ -57,11 +61,17 @@ async function impDetails(arg) {
     let users = await response.json();
     const data = users.result;
     let value1 = document.getElementById('value2');
+    let link = document.createElement('a');
+    link.target = "_blank";
+    link.href = `https://codeforces.com/profile/${arg}`;
+    link.style.color = 'black';
     let heading = document.createElement('h2');
     heading.style = 'container-fluid';
     heading.style.textDecoration = 'underline';
     heading.innerText = `${arg}`;
-    value1.appendChild(heading);
+    link.appendChild(heading);
+    value1.appendChild(link);
+
     let averageProblemSolved = 0;
     let totalProblems = 0;
     for (let user in data) {
@@ -70,6 +80,7 @@ async function impDetails(arg) {
             totalProblems++;
         }
     }
+
     url = `https://codeforces.com/api/user.rating?handle=${arg}`;
     response = await fetch(url);
     users = await response.json();
