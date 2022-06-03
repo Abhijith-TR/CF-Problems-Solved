@@ -5,7 +5,7 @@ let usersOnPage = [];
 
 // Functionality to alert the user if the username entered is invalid
 
-search.addEventListener('click',(event) => {
+search.addEventListener('click', (event) => {
     event.preventDefault();
     if (document.getElementById('value1').innerHTML == "" && document.getElementById('value3').innerHTML == "") usersOnPage = [];
     let sValue = document.getElementById('sValue');
@@ -17,7 +17,7 @@ search.addEventListener('click',(event) => {
     fetchProblemList(sValue.value, i);
     impDetails(sValue.value);
     sValue.value = "";
-    if (i==1) i = 3;
+    if (i == 1) i = 3;
     else i = 1;
 });
 
@@ -33,8 +33,8 @@ async function fetchProblemList(arg, i) {
     const data = users.result;
     const problems = new Map();
     let totalProblems = 0;
-    for (let rating=800; rating <= 4000; rating+=100) {
-        problems.set(rating,0);
+    for (let rating = 800; rating <= 4000; rating += 100) {
+        problems.set(rating, 0);
     }
     for (let user in data) {
         totalProblems++;
@@ -42,7 +42,7 @@ async function fetchProblemList(arg, i) {
         if (level === undefined) continue;
         if (problems.has(level) && data[user].verdict === 'OK') {
             let value = problems.get(level);
-            problems.set(level, value+1);
+            problems.set(level, value + 1);
         }
     }
     let value1 = document.getElementById(`value${i}`);
@@ -105,7 +105,7 @@ async function impDetails(arg) {
     element.style.fontSize = "20px";
     element.innerHTML = `
         Highest Rating: ${highestRating}<br>
-        Average Rating Change: ${averageRatingChange/10}<br>
-        Average Problem Solved: ${Math.round(averageProblemSolved/totalProblems)}<br>`;
+        Average Rating Change: ${averageRatingChange / 10}<br>
+        Average Problem Solved: ${Math.round(averageProblemSolved / totalProblems)}<br>`;
     value1.appendChild(element);
 }
