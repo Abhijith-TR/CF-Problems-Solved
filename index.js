@@ -1,12 +1,19 @@
 let search = document.getElementById('search');
 let i = 1;
 let profileURL = "";
+let usersOnPage = [];
 
 // Functionality to alert the user if the username entered is invalid
 
 search.addEventListener('click',(event) => {
     event.preventDefault();
+    if (document.getElementById('value1').innerHTML == "" && document.getElementById('value3').innerHTML == "") usersOnPage = [];
     let sValue = document.getElementById('sValue');
+    if (usersOnPage.indexOf(sValue.value.toLowerCase()) != -1) {
+        sValue.value = "";
+        window.alert("User already on page");
+        return;
+    }
     fetchProblemList(sValue.value, i);
     impDetails(sValue.value);
     sValue.value = "";
@@ -19,8 +26,9 @@ async function fetchProblemList(arg, i) {
     const response = await fetch(url);
     if (response.status != 200) {
         window.alert("Please Enter a Valid Username");
-        return;
+        return 0;
     }
+    usersOnPage.push(arg.toLowerCase());
     const users = await response.json();
     const data = users.result;
     const problems = new Map();
@@ -48,7 +56,7 @@ async function fetchProblemList(arg, i) {
     heading.style.fontSize = "20px";
     let string = "";
     problems.forEach((value, key) => {
-        if (value != 0) string += `Difficulty ${key} (${value}) <progress value="${value}" max="${totalProblems}"></progress><br>`
+        if (value != 0) string += `Difficulty ${key} (${value}) <progress value="${value}" max="${totalProblems}" height="15px"></progress><br>`
     });
     heading.innerHTML = string;
     value1.appendChild(heading);
