@@ -21,24 +21,16 @@ async function fetchProblemList(arg, i) {
     const data = users.result;
     const problems = new Map();
     let totalProblems = 0;
-    problems.set('A',0);
-    problems.set('B',0);
-    problems.set('C',0);
-    problems.set('D',0);
-    problems.set('E',0);
-    problems.set('F',0);
-    problems.set('G',0);
-    problems.set('H',0);
-    problems.set('I',0);
+    for (let rating=800; rating <= 4000; rating+=100) {
+        problems.set(rating,0);
+    }
     for (let user in data) {
         totalProblems++;
-        let level = data[user].problem.index[0];
+        let level = data[user].problem.rating;
+        if (level === undefined) continue;
         if (problems.has(level) && data[user].verdict === 'OK') {
             let value = problems.get(level);
             problems.set(level, value+1);
-        }
-        else if (data[user].verdict === 'OK') {
-            problems.set(level, 1);
         }
     }
     let value1 = document.getElementById(`value${i}`);
@@ -52,7 +44,7 @@ async function fetchProblemList(arg, i) {
     heading.style.fontSize = "20px";
     let string = "";
     problems.forEach((value, key) => {
-        if (value != 0) string += `Problem ${key} (${value}) <progress value="${value}" max="${totalProblems}"></progress><br>`
+        if (value != 0) string += `Difficulty ${key} (${value}) <progress value="${value}" max="${totalProblems}"></progress><br>`
     });
     heading.innerHTML = string;
     value1.appendChild(heading);
@@ -70,17 +62,31 @@ async function impDetails(arg) {
     heading.style.textDecoration = 'underline';
     heading.innerText = `${arg}`;
     value1.appendChild(heading);
+    let averageProblemSolved = 0;
+    let totalProblems = 0;
+    for (let user in data) {
+        if (data[user].verdict == 'OK' && data[user].problem.rating !== undefined) {
+            averageProblemSolved += data[user].problem.rating;
+            totalProblems++;
+        }
+    }
     url = `https://codeforces.com/api/user.rating?handle=${arg}`;
     response = await fetch(url);
     users = await response.json();
     ratingInfo = users.result;
     let highestRating = 0;
-
+    let averageRatingChange = 0;
     let element = document.createElement('p');
     let string = "";
+    let totalContests = ratingInfo.length;
     for (let i in ratingInfo) {
         highestRating = Math.max(highestRating, ratingInfo[i].newRating);
+        if (i >= totalContests - 10) averageRatingChange += (ratingInfo[i].newRating - ratingInfo[i].oldRating);
     }
-    element.innerHTML = `Highest Rating: ${highestRating}`;
+    element.style.fontSize = "20px";
+    element.innerHTML = `
+        Highest Rating: ${highestRating}<br>
+        Average Rating Change: ${averageRatingChange/10}<br>
+        Average Problem Solved: ${Math.round(averageProblemSolved/totalProblems)}<br>`;
     value1.appendChild(element);
 }
